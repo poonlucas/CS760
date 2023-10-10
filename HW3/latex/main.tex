@@ -28,8 +28,8 @@
 \usepackage{times}
 \usepackage{textcomp}
 \usepackage{caption}
-\usepackage{color}
-\usepackage{xcolor}
+\usepackage{multirow}
+
 
 \urlstyle{rm}
 
@@ -42,6 +42,7 @@
 \newtheorem{lemma}{Lemma}
 \newtheorem{proposition}{Proposition}
 \newtheorem{corollary}{Corollary}
+
 
 \floatname{algorithm}{Procedure}
 \renewcommand{\algorithmicrequire}{\textbf{Input:}}
@@ -103,17 +104,17 @@
 
 
 \pagestyle{fancyplain}
-\lhead{\fancyplain{}{Homework 2}}
+\lhead{\fancyplain{}{Homework 3}}
 \rhead{\fancyplain{}{CS 760 Machine Learning}}
 \cfoot{\thepage}
 
-\title{\textsc{Homework 2}} % Title
+\title{\textsc{Homework 3}} % Title
 
 %%% NOTE:  Replace 'NAME HERE' etc., and delete any "\red{}" wrappers (so it won't show up as red)
 
 \author{
-\red{Lucas Poon} \\
-\red{llpoon}\\
+\red{$>>$NAME HERE$<<$} \\
+\red{$>>$ID HERE$<<$}\\
 } 
 
 \date{}
@@ -124,378 +125,320 @@
 
 
 \textbf{Instructions:} 
-Use this latex file as a template to develop your homework. Submit your homework on time as a single pdf file to Canvas. Please wrap your code and upload to a public GitHub repo, then attach the link below the instructions so that we can access it. You can choose any programming language (i.e. python, R, or MATLAB), as long as you implement the algorithm from scratch (e.g. do not use sklearn on questions 1 to 7 in section 2). Please check Piazza for updates about the homework.
+Use this latex file as a template to develop your homework. Submit your homework on time as a single pdf file to Canvas. Late submissions may not be accepted. Please wrap your code and upload to a public GitHub repo, then attach the link below the instructions so that we can access it. You can choose any programming language (i.e. python, R, or MATLAB). Please check Piazza for updates about the homework.
 
-\section{A Simplified Decision Tree}
-You are to implement a decision-tree learner for classification.
-To simplify your work, this will not be a general purpose decision tree.  Instead, your program can assume that
-\begin{itemize}
-\item each item has two continuous features $\x \in \RR^2$
-\item the class label is binary and encoded as $y \in \{0,1\}$
-\item data files are in plaintext with one labeled item per line, separated by whitespace:
-$$x_{11} \quad x_{12} \quad y_1$$
-$$...$$
-$$x_{n1} \quad x_{n2} \quad y_n$$
-\end{itemize}
-
-Your program should implement a decision tree learner according to the following guidelines:
-\begin{itemize}
-\item Candidate splits $(j,c)$ for numeric features should use a threshold $c$ in feature dimension $j$ in the form of $x_{j}\ge c$.
-\item $c$ should be on values of that dimension present in the training data; i.e. the threshold is on training points, not in between training points. You may enumerate all features, and for each feature, use all possible values for that dimension.
-\item You may skip those candidate splits with zero split information (i.e. the entropy of the split), and continue the enumeration.
-\item The left branch of such a split is the ``then'' branch, and the right branch is ``else''.
-\item Splits should be chosen using information gain ratio. If there is a tie you may break it arbitrarily.
-\item The stopping criteria (for making a node into a leaf) are that 
-	\begin{itemize}
-	\item the node is empty, or
-	\item all splits have zero gain ratio (if the entropy of the split is non-zero), or
-	\item the entropy of any candidates split is zero
-	\end{itemize}
-\item To simplify, whenever there is no majority class in a leaf, let it predict $y=1$.
-\end{itemize}
-\begin{soln}
-    \href{https://github.com/poonlucas/CS760/tree/21948bf945f4ede31e6600ef4051e8666d72e39b/HW2}{GitHub Repository for source code (main.py)}.
-\end{soln}
-
-
-\section{Questions}
+\section{Questions (50 pts)}
 \begin{enumerate}
-\item (Our algorithm stops at pure labels) [10 pts] If a node is not empty but contains training items with the same label, why is it guaranteed to become a leaf?  Explain. You may assume that the feature values of these items are not all the same. \\
-\begin{soln}
-When a node is not empty, we determine the candidate splits and find the greatest info-gain. \\ Let the $Y$ be the data set, $n$ denote the number of data points in $Y$, $P_0$, $P(Y=0)$ and $P_1$ denote $P(Y=1)$. \\ Then the entropy of the whole set is: \\ $H_D(Y) = -P_1log_2(P_1) - P_0log_2(P_0) = - 1log_2(1) - 0log_2(0) = 0 $ \\ 
-The entropy of any candidate split $S$: \\ $ H_D(Y|S) = -P_1log_2(P_1) - P_0log_2(P_0) = - 1log_2(1) - 0log_2(0) = 0 $ \\ Hence, the gain ratio for all candidate splits would be: $ \cfrac{0 - 0}{n} = 0 $ \\ By the given guidelines, it suffices one of the stopping criteria, as all splits to have zero gain ratio, therefore it is guaranteed to become a leaf.
-\end{soln}
+\item (9 pts) Explain whether each scenario is a classification or regression problem. And, provide the number of data points ($n$) and the number of features ($p$).
 
-
-\item (Our algorithm is greedy)  [10 pts] Handcraft a small training set where both classes are present but the algorithm refuses to split; instead it makes the root a leaf and stop;
-Importantly, if we were to manually force a split, the algorithm will happily continue splitting the data set further and produce a deeper tree with zero training error.
-You should (1) plot your training set, (2) explain why.  Hint: you don't need more than a handful of items. \\
-\begin{soln}
-Consider the XOR dataset:
-\begin{center}
-\begin{tabular}{ |c |c| c| }
-    \hline $x_1$ & $x_2$ & y \\
-    \hline 0.0 & 0.0 & 0 \\ 
-    \hline 1.0 & 0.0 & 1 \\  
-    \hline 0.0 & 1.0 & 1 \\
-    \hline 1.0 & 1.0 & 0 \\
-    \hline
-\end{tabular}
-\end{center}
-Scatter plot of XOR:
-\begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.8\textwidth]{images/XORScatter.png}  
-            % reference folder/figure.pdf here and adjust width
-    \captionsetup{labelformat=empty}
-    \caption{}
-    \label{fig:mixed}
-\end{figure}
-\newpage
-The entropy of the whole data set is:
-$ H_D(Y) = -\cfrac{2}{4}log_2(\cfrac{2}{4}) - \cfrac{2}{4}log_2(\cfrac{2}{4}) = 0.5$ \\
-Then we choose a split: \\
-Considering $x_1 \geq 0.0$: InfoGain $= 0.5 - (-\cfrac{2}{4}log_2(\cfrac{2}{4})) = 0 $, then Gain Ratio = 0  \\
-Considering $x_1 \geq 1.0$: InfoGain $= 0.5 - (-\cfrac{2}{4} * \cfrac{1}{2}log_2(\cfrac{1}{2}) + (-\cfrac{2}{4} * \cfrac{1}{2}log_2(\cfrac{1}{2})) = 0 $, then Gain Ratio = 0 
-Similarly, considering $x_2 \geq 0.0$: InfoGain $= 0.5 - (-\cfrac{2}{4}log_2(\cfrac{2}{4})) = 0 $, then Gain Ratio = 0  \\
-Considering $x_2 \geq 1.0$: InfoGain $= 0.5 - (-\cfrac{2}{4} * \cfrac{1}{2}log_2(\cfrac{1}{2}) + (-\cfrac{2}{4} * \cfrac{1}{2}log_2(\cfrac{1}{2})) = 0 $, then Gain Ratio = 0 \\
-Since all splits have zero gain ratio, the algorithm refuses to split.
-\end{soln}
-
-\item (Information gain ratio exercise)  [10 pts] Use the training set Druns.txt.  For the root node, list all candidate cuts and their information gain ratio. If the entropy of the candidate split is zero, please list its mutual information (i.e. information gain). Hint: to get $\log_2(x)$ when your programming language may be using a different base, use \verb|log(x)/log(2)|. Also, please follow the split rule in the first section. \\
-\begin{soln}
-\begin{center}
-\begin{tabular}{ |c| c |c| }
-    \hline Feature & Threshold & Gain Ratio \\
-    \hline $x_1$ & $\geq$0.0 & 0.0 \\
-    \hline $x_1$ & $\geq$0.1 & 0.10051807676021852 \\
-    \hline $x_2$ & $\geq$-2.0 & 0.0 \\
-    \hline $x_2$ & $\geq$-1.0 & 0.10051807676021852 \\
-    \hline $x_2$ & $\geq$0.0 & 0.055953759631263686 \\
-    \hline $x_2$ & $\geq$1.0 & 0.005780042205152451 \\
-    \hline $x_2$ & $\geq$2.0 & 0.0011443495172768668 \\
-    \hline $x_2$ & $\geq$3.0 & 0.016411136842102245 \\
-    \hline $x_2$ & $\geq$4.0 & 0.04974906418177866 \\
-    \hline $x_2$ & $\geq$5.0 & 0.1112402958633981 \\
-    \hline $x_2$ & $\geq$6.0 & 0.2360996061436081 \\
-    \hline $x_2$ & $\geq$7.0 & 0.055953759631263686 \\
-    \hline $x_2$ & $\geq$8.0 & 0.43015691613098095 \\
-    \hline
-\end{tabular}
-\end{center}
-\end{soln}
-
-\item (The king of interpretability)  [10 pts] Decision tree is not the most accurate classifier in general.  However, it persists.  This is largely due to its rumored interpretability: a data scientist can easily explain a tree to a non-data scientist.  Build a tree from D3leaves.txt.  Then manually convert your tree to a set of logic rules.  Show the tree\footnote{When we say show the tree, we mean either the standard computer science tree view, or some crude plaintext representation of the tree -- as long as you explain the format.  When we say visualize the tree, we mean a plot in the 2D $\x$ space that shows how the tree will classify any points.} and the rules. \\
-\begin{soln}
-\begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.6\textwidth]{images/D3leavesTree.pdf}  
-            % reference folder/figure.pdf here and adjust width
-    \captionsetup{labelformat=empty}
-    \caption{}
-    \label{fig:mixed}
-\end{figure}
-\\
-This tree can be written as the following logic rule: \\
-$(x_1 \geq 10.0) \vee (x_2 \geq 3.0)$
-\end{soln}
-
-
-\item (Or is it?)  [10 pts] For this question only, make sure you DO NOT VISUALIZE the data sets or plot your tree's decision boundary in the 2D $\x$ space.  If your code does that, turn it off before proceeding.  This is because you want to see your own reaction when trying to interpret a tree.  You will get points no matter what your interpretation is.
-And we will ask you to visualize them in the next question anyway.
-  \begin{itemize}
-  
-  \item Build a decision tree on D1.txt.  Show it to us in any format (e.g. could be a standard binary tree with nodes and arrows, and denote the rule at each leaf node; or as simple as plaintext output where each line represents a node with appropriate line number pointers to child nodes; whatever is convenient for you). Again, do not visualize the data set or the tree in the $\x$ input space.  In real tasks you will not be able to visualize the whole high dimensional input space anyway, so we don't want you to ``cheat'' here. 
-  \begin{soln}
-  \\
-    The decision tree looks like this:
-    \begin{figure}[h!]
-        \centering
-        \includegraphics[width=0.6\textwidth]{images/D1Tree.pdf}  
-                % reference folder/figure.pdf here and adjust width
-        \captionsetup{labelformat=empty}
-        \caption{}
-        \label{fig:mixed}
-    \end{figure}
-  \end{soln}
-  
-  \item Look at your tree in the above format (remember, you should not visualize the 2D dataset or your tree's decision boundary) and try to interpret the decision boundary in human understandable English. 
-  \begin{soln}
-      The decision tree suggests that there is a decision boundary at $x_2 \geq 0.201829$. In simpler terms, for any data point with feature $x_2 \geq 0.201829$, it will predict the label 1 and for any data point with feature $x_2 < 0.201829$, it will predict the label 0.
-  \end{soln}
-  
-  \item Build a decision tree on D2.txt.  Show it to us. 
-  \begin{soln}
-   \\
-    The decision tree looks like this (Gain Ratio ommited due to size):
-    \begin{figure}[h!]
-        \centering
-        \includegraphics[width=1\textwidth]{images/D2Tree.pdf}  
-                % reference folder/figure.pdf here and adjust width
-        \captionsetup{labelformat=empty}
-        \caption{}
-        \label{fig:mixed}
-    \end{figure}
-  \end{soln}
-  
-  \item Try to interpret your D2 decision tree. Is it easy or possible to do so without visualization? \\
-  \begin{soln}
-    The decision tree for D2 is a lot more complex as there are a lot more branches and the tree is larger. It is very difficult to interpret this decision tree without visualization due to its complexity.
-  \end{soln}
-  
-  \end{itemize}
-
-\newpage
-\item (Hypothesis space)  [10 pts] For D1.txt and D2.txt, do the following separately:
-  \begin{itemize}
-  
-  \item Produce a scatter plot of the data set.
-  \begin{soln}
-    \begin{figure}[h!]
-        \centering
-        \includegraphics[width=0.8\textwidth]{images/D1Scatter.png}  
-                % reference folder/figure.pdf here and adjust width
-        \captionsetup{labelformat=empty}
-        \caption{}
-        \label{fig:mixed}
-    \end{figure}
-    \begin{figure}[h!]
-        \centering
-        \includegraphics[width=0.8\textwidth]{images/D2Scatter.png}  
-                % reference folder/figure.pdf here and adjust width
-        \captionsetup{labelformat=empty}
-        \caption{}
-        \label{fig:mixed}
-    \end{figure}
-  \end{soln}
-
-\newpage
-  \item Visualize your decision tree's decision boundary (or decision region, or some other ways to clearly visualize how your decision tree will make decisions in the feature space).
-  \begin{soln}
-    \begin{figure}[h!]
-        \centering
-        \includegraphics[width=0.8\textwidth]{images/D1ScatterDecisionBoundary.png}  
-                % reference folder/figure.pdf here and adjust width
-        \captionsetup{labelformat=empty}
-        \caption{}
-        \label{fig:mixed}
-    \end{figure}
-    \begin{figure}[h!]
-        \centering
-        \includegraphics[width=0.8\textwidth]{images/D2ScatterDecisionBoundary.png}  
-                % reference folder/figure.pdf here and adjust width
-        \captionsetup{labelformat=empty}
-        \caption{}
-        \label{fig:mixed}
-    \end{figure}
-  \end{soln}
-
-  \end{itemize}
-Then discuss why the size of your decision trees on D1 and D2 differ.  Relate this to the hypothesis space of our decision tree algorithm. \\
-
-\begin{soln}
-For D1, the the decision tree's decision boundary was very similar to the hypothesis space where we would have expected by looking at the scatter plot of D1, that is, a clear boundary at around $x_2 = 0.2$. For D2, the decision boundary from the decision tree is similar but not exactly what we would expect for the decision boundary to be. By looking at the scatter plot of D2, we would expect a decision boundary at $x_2 = x_1 + 1$. However, the decision tree's decision boundary gave a staircase shape around $x_2 = x_1 + 1$.
-\end{soln}
-
-
-\newpage
-\item (Learning curve)  [20 pts] We provide a data set Dbig.txt with 10000 labeled items.  Caution: Dbig.txt is sorted.
-  \begin{itemize}
-  
-  \item You will randomly split Dbig.txt into a candidate training set of 8192 items and a test set (the rest).  Do this by generating a random permutation, and split at 8192.
-  
-  \item Generate a sequence of five nested training sets $D_{32} \subset D_{128} \subset D_{512} \subset D_{2048} \subset D_{8192}$ from the candidate training set.  The subscript $n$ in $D_n$ denotes training set size.  The easiest way is to take the first $n$ items from the (same) permutation above.  This sequence simulates the real world situation where you obtain more and more training data.
-  
-  \item For each $D_n$ above, train a decision tree.  Measure its test set error $err_n$.  Show three things in your answer: (1) List $n$, number of nodes in that tree, $err_n$. (2) Plot $n$ vs. $err_n$.  This is known as a learning curve (a single plot). (3) Visualize your decision trees' decision boundary (five plots). \\
-  \end{itemize}
-  
-  \begin{soln}
-    (1) number of nodes $n$ and corresponding $err_n$ \\
-    \begin{center}
-    \begin{tabular}{ |c| c| c| }
-        \hline n & Number of Nodes & $err_n$ \\
-        \hline 32 & 11 & 0.26216814159292035 \\
-        \hline 128 & 19 & 0.0918141592920354 \\
-        \hline 512 & 61 & 0.07743362831858407 \\
-        \hline 2048 & 139 & 0.03816371681415929 \\
-        \hline 8192 & 279 & 0.016592920353982302 \\
-        \hline
-    \end{tabular}
-    \end{center}
-    (2) $n$ vs. $err_n$ \\
-    \begin{figure}[h!]
-        \centering
-        \includegraphics[width=1\textwidth]{images/nvserr.png}  
-                % reference folder/figure.pdf here and adjust width
-        \captionsetup{labelformat=empty}
-        \caption{}
-        \label{fig:mixed}
-    \end{figure}
-    \newpage
-    (3) Decision tree's decision boundaries: \\
-    $D_{32}$:
-    \begin{figure}[h!]
-        \centering
-        \includegraphics[width=0.8\textwidth]{images/D_32ScatterDecisionBoundary.png}  
-                % reference folder/figure.pdf here and adjust width
-        \captionsetup{labelformat=empty}
-        \caption{}
-        \label{fig:mixed}
-    \end{figure}
-    \\ $D_{128}$:
-    \begin{figure}[h!]
-        \centering
-        \includegraphics[width=0.8\textwidth]{images/D_128ScatterDecisionBoundary.png}  
-                % reference folder/figure.pdf here and adjust width
-        \captionsetup{labelformat=empty}
-        \caption{}
-        \label{fig:mixed}
-    \end{figure}
-    \newpage
-    $D_{512}$:
-    \begin{figure}[h!]
-        \centering
-        \includegraphics[width=0.8\textwidth]{images/D_512ScatterDecisionBoundary.png}  
-                % reference folder/figure.pdf here and adjust width
-        \captionsetup{labelformat=empty}
-        \caption{}
-        \label{fig:mixed}
-    \end{figure}
-    \\ $D_{2048}$:
-    \begin{figure}[h!]
-        \centering
-        \includegraphics[width=0.8\textwidth]{images/D_2048ScatterDecisionBoundary.png}  
-                % reference folder/figure.pdf here and adjust width
-        \captionsetup{labelformat=empty}
-        \caption{}
-        \label{fig:mixed}
-    \end{figure}
-    \newpage
-    $D_{8192}$:
-    \begin{figure}[h!]
-        \centering
-        \includegraphics[width=0.8\textwidth]{images/D_8192ScatterDecisionBoundary.png}  
-                % reference folder/figure.pdf here and adjust width
-        \captionsetup{labelformat=empty}
-        \caption{}
-        \label{fig:mixed}
-    \end{figure}
-  \end{soln}
-    
+\begin{enumerate}
+	\item (3 pts) We collect a set of data on the top 500 firms in the US. For each firm we record profit, number of employees, industry and the CEO salary. We are interested in predicting CEO salary with given factors.
+	
+	\begin{soln}  
+            Regression Problem, \\
+            $n$: 500, \\
+            $p$: 3 - profit, number of employees, industry\end{soln}
+	
+	\item (3 pts) We are considering launching a new product and wish to know whether it will be a success or a failure. We collect data on 20 similar products that were previously launched. For each product we have recorded whether it was a success or failure, price charged for the product, marketing budget, competition price, and ten other variables.
+	
+	\begin{soln}
+            Classification Problem, \\
+            $n$: 20, \\
+            $p$: 13 - price charged for the product, marketing budget, competition price and ten other variables
+        \end{soln}
+	
+	\item (3 pts) We are interesting in predicting the \% change in the US dollar in relation to the weekly changes in the world stock markets. Hence we collect weekly data for all of 2012. For each week we record the \% change in the dollar, the \% change in the US market, the \% change in the British market, and the \% change in the German market.
+	
+	\begin{soln}
+            Regression Problem, \\
+            $n$: 52, \\
+            $p$: 3 - \% change in the US market, the \% change in the British market, and the \% change in the German market\end{soln}
+	
 \end{enumerate}
 
-\newpage
-\section{sklearn [10 pts]}
-Learn to use sklearn (\url{https://scikit-learn.org/stable/}).
-Use sklearn.tree.DecisionTreeClassifier to produce trees for datasets $D_{32}, D_{128}, D_{512}, D_{2048}, D_{8192}$.  Show two things in your answer: (1) List $n$, number of nodes in that tree, $err_n$. (2) Plot $n$ vs. $err_n$.
+\item (6 pts) The table below provides a training data set containing six observations, three predictors, and one qualitative response variable.
 
-\begin{soln}
-    (1) number of nodes $n$ and corresponding $err_n$ \\
-    \begin{center}
-    \begin{tabular}{ |c| c| c| }
-        \hline n & Number of Nodes & $err_n$ \\
-        \hline 32 & 11 & 0.07743362831858407 \\
-        \hline 128 & 31 & 0.08241150442477876 \\
-        \hline 512 & 53 & 0.04424778761061947 \\
-        \hline 2048 & 109 & 0.023230088495575223 \\
-        \hline 8192 & 243 & 0.01327433628318584 \\
-        \hline
-    \end{tabular}
-    \end{center}
-    (2) $n$ vs. $err_n$ \\
-    \begin{figure}[h!]
-        \centering
-        \includegraphics[width=1\textwidth]{images/sklearnnvserr.png}  
-                % reference folder/figure.pdf here and adjust width
-        \captionsetup{labelformat=empty}
-        \caption{}
-        \label{fig:mixed}
-    \end{figure}
-\end{soln}
+\begin{center}
+	\begin{tabular}{ c  c  c  c}
+		\hline
+		$X_{1}$ & $X_{2}$ & $X_{3}$ & $Y$ \\ \hline
+		0 & 3 & 0 & Red \\
+		2 & 0 & 0 & Red \\
+		0 & 1 & 3 & Red \\
+		0 & 1 & 2 & Green \\
+		-1 & 0 & 1 & Green \\
+		1 & 1 & 1 & Red  \\
+		\hline
+	\end{tabular}
+\end{center}
 
-\newpage
-\section{Lagrange Interpolation [10 pts]}
-Fix some interval $[a, b]$ and sample $n = 100$ points $x$ from this interval uniformly. Use these to build a training set consisting of $n$ pairs $(x, y)$ by setting function $y = sin(x)$. \\
+Suppose we wish to use this data set to make a prediction for $Y$ when $X_{1} = X_{2} = X_{3} = 0$ using K-nearest neighbors.
 
-Build a model $f$ by using Lagrange interpolation, check more details in \url{https://en.wikipedia.org/wiki/Lagrange_polynomial} and \url{https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.lagrange.html}. \\
+\begin{enumerate}
+	\item (2 pts) Compute the Euclidean distance between each observation and the test point, $X_{1} = X_{2} = X_{3}=0$.
+ 
+	\begin{soln}
+            \begin{center}
+            	\begin{tabular}{| c | c | c |}
+            		\hline
+            		Observation & Label & Euclidean Distance \\
+            		\hline 1 & Red & 3\\
+            		\hline 2 & Red & 2\\
+            		\hline 3 & Red & $\sqrt{10}$ \\
+            		\hline 4 & Green & $\sqrt{5}$\\
+            		\hline 5 & Green & $\sqrt{2}$\\
+            		\hline 6 & Red & $\sqrt{3}$ \\
+            		\hline
+            	\end{tabular}
+            \end{center}
+        \end{soln}
+ 
+	\item (2 pts) What is our prediction with $K=1$? Why?
+	
+	\begin{soln}  Green, because the closest 1 (K=1) observation is observation 5 with distance $\sqrt{2}$ and label Green, therefore the prediction is Green. \end{soln}
+	
+	\item (2 pts) What is our prediction with $K=3$? Why?
+	
+	\begin{soln}  Red, because the closest 3 (K=3) observations are observations 5, 6 and 2 with distances $\sqrt{2}, \sqrt{3}, 2$ and labels Green, Red, Red respectively. Since the count of Red labels in the closest 3 observations is greater than the count of Green labels ($2 > 1$), therefore the prediction is Red. \end{soln}
 
-Generate a test set using the same distribution as your test set. Compute and report the resulting model’s train and test error. What do you observe?
-Repeat the experiment with zero-mean Gaussian noise $\epsilon$ added to $x$. Vary the standard deviation for $\epsilon$ and report your findings.
+\end{enumerate}
 
-\begin{soln}
-    The interval I chose was [$0$, $2\pi$] \\ 
-    The results I got was: \\ 
-    \begin{center}
-    \begin{tabular}{ |c| c| c| }
-        \hline Noise & $log_{10}MSE$ & Standard Deviation ($\sigma$) \\
-        \hline None & 366.45576741318945 & N/A \\
-        \hline Yes & 371.3808375446383 & 0 \\
-        \hline Yes & 366.14317640682935 & 1\\
-        \hline Yes & 242.60394936227559 & 2\\
-        \hline Yes & 182.53917601501894 & 3\\
-        \hline Yes & 147.53281719892328 & 4\\
-        \hline Yes & 111.77762078246857 & 5\\
-        \hline Yes & 109.6468350555486 & 6\\
-        \hline Yes & 81.76901863719014 & 7\\
-        \hline Yes & 70.20895138776518 & 8\\
-        \hline Yes & 52.89304239643873 & 9\\
-        \hline
-    \end{tabular}
-    \end{center}
+\item (12 pts) When the number of features $p$ is large, there tends to be a deterioration in the performance of KNN and other local approaches that perform prediction using only observations that are near the test ob- servation for which a prediction must be made. This phenomenon is known as the curse of dimensionality, and it ties into the fact that non-parametric approaches often perform poorly when $p$ is large.
 
-    The original model $f$ without zero-mean Gaussian noise $\epsilon$ was had a lower MSE than with the zero-mean Gaussian noise when there was no standard deviation. However, when there was standard deviation of $\geq$ 1, the MSE became less for the model with the zero-mean Gaussian noise.  \\
-    Standard Deviation vs $log_{10}MSE$:
-    \begin{figure}[h!]
-        \centering
-        \includegraphics[width=0.8\textwidth]{images/stdevvslogmse.png}  
-                % reference folder/figure.pdf here and adjust width
-        \captionsetup{labelformat=empty}
-        \caption{}
-        \label{fig:mixed}
-    \end{figure}
-    \\ As the standard deviation increases, the MSE decreases as shown in the graph above.
-\end{soln}
+\begin{enumerate}
+	\item (2pts) Suppose that we have a set of observations, each with measurements on $p=1$ feature, $X$. We assume that $X$ is uniformly (evenly) distributed on [0, 1]. Associated with each observation is a response value. Suppose that we wish to predict a test observation’s response using only observations that are within 10\% of the range of $X$ closest to that test observation. For instance, in order to predict the response for a test observation with $X=0.6$, we will use observations in the range [0.55, 0.65]. On average, what fraction of the available observations will we use to make the prediction?
+	
+	\begin{soln}  When $0.05 \leq x \leq 0.95$, \\ the interval of observations is $[x - 0.05, x + 0.05]$, which is $10\%$ of the observation set. \\ When $x < 0.05$, \\ the interval of observations is $[0, x + 0.05]$, which is $(100x + 5)\%$ of the observation set. \\ When $x > 0.95$, \\ the interval of observations is $[x - 0.05, 1.0]$, which is $(105 - 100x)\%$ of the observation set. \\ Then the average fraction of the available observations we will use to make the prediction is given by: \\ $\int_{0.05}^{0.95} 10x \,dx + \int_{0}^{0.05} (100x - 5) \,dx + \int_{0.95}^{1.0} (105 - 100x) \,dx = 9 + 0.375 + 0.375 = 9.75\%$. \\ Therefore, on average we will use 9.75\% of the set of observations to make the prediction.
+        \end{soln}
+	
+	
+	\item (2pts) Now suppose that we have a set of observations, each with measurements on $p =2$ features, $X1$ and $X2$. We assume that predict a test observation’s response using only observations that $(X1,X2)$ are uniformly distributed on [0, 1] × [0, 1]. We wish to are within 10\% of the range of $X1$ and within 10\% of the range of $X2$ closest to that test observation. For instance, in order to predict the response for a test observation with $X1 =0.6$ and $X2 =0.35$, we will use observations in the range [0.55, 0.65] for $X1$ and in the range [0.3, 0.4] for $X2$. On average, what fraction of the available observations will we use to make the prediction?
+	
+	\begin{soln} Assuming $X1$ and $X2$ are independent, then the fraction of      available observations will be: \\ $9.75\% * 9.75\% = 0.950625\%$ 
+        \end{soln}
+	
+	\item (2pts) Now suppose that we have a set of observations on $p = 100$ features. Again the observations are uniformly distributed on each feature, and again each feature ranges in value from 0 to 1. We wish to predict a test observation’s response using observations within the 10\% of each feature’s range that is closest to that test observation. What fraction of the available observations will we use to make the prediction?
+	
+	\begin{soln} $(9.75\%)^{100} = 7.951729 * 10^{-100}\% $ \end{soln}
+
+        \newpage
+	\item (3pts) Using your answers to parts (a)–(c), argue that a drawback of KNN when p is large is that there are very few training observations “near” any given test observation.
+	
+	\begin{soln} In KNN, we find the nearest K nearest neighbors to make the prediction. From parts (a)-(c), we see that the fraction of the available observations we can use to make the prediction is $(9.75\%)^{p}$. As $p\xrightarrow{}\infty$, the available observations can be given by: \\ $\lim_{{p \to \infty}} (9.75\%)^{p} = 0$.\\ Hence, there are fewer training observations "near" any given test observation as p becomes larger. \end{soln}
+	
+	\item (3pts) Now suppose that we wish to make a prediction for a test observation by creating a $p$-dimensional hypercube centered around the test observation that contains, on average, 10\% of the training observations. For $p =$1, 2, and 100, what is the length of each side of the hypercube? Comment what happens to the length of the sides as $\lim_{{p \to \infty}}$.
+	
+	\begin{soln} A $p$-dimensional hypercube centered around the test observation that contains on average 10\% of the training observations is equivalent to our hypercube having a volume of 0.1. Since the side length $l$ of a $p$-dimensional hypercube is given by $l=V^{\cfrac{1}{p}}$ for volume $V$, then: \\
+    For $p=$1, $l=0.1$, For $p=$2, $l=0.1^{1/2}$, For $p=$100, $l=0.1^{1/100}$. As $\lim_{{p \to \infty}}$, the length of each side goes to 1. 
+        \end{soln}
+	
+\end{enumerate}
+
+\item (6 pts) Supoose you trained a classifier for a spam detection system. The prediction result on the test set is summarized in the following table.
+\begin{center}
+	\begin{tabular}{l l | l l}
+		&          & \multicolumn{2}{l}{Predicted class} \\
+		&          & Spam           & not Spam           \\
+		\hline
+		\multirow{2}{*}{Actual class} & Spam     & 8              & 2                  \\
+		& not Spam & 16             & 974               
+	\end{tabular}
+\end{center}
+
+Calculate
+\begin{enumerate}
+	\item (2 pts) Accuracy
+	\begin{soln}  $\cfrac{8 + 974}{8 + 16 + 2 + 974} = 0.982$ \end{soln}
+	\item (2 pts) Precision
+	\begin{soln}  $\cfrac{8}{8 + 16} = \cfrac{1}{3}$ \end{soln}
+	\item (2 pts) Recall
+	\begin{soln}  $\cfrac{8}{8 + 2} = 0.8$ \end{soln}
+\end{enumerate}
 
 
+\item (9pts) Again, suppose you trained a classifier for a spam filter. The prediction result on the test set is summarized in the following table. Here, "+" represents spam, and "-" means not spam.
+
+\begin{center}
+\begin{tabular}{ c  c }
+\hline
+Confidence positive & Correct class \\ \hline
+0.95 & + \\
+0.85 & + \\
+0.8 & - \\
+0.7 & + \\
+0.55 & + \\
+0.45 & - \\
+0.4 & + \\
+0.3 & + \\
+0.2 & - \\
+0.1 & - \\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{enumerate}
+        \newpage
+	\item (6pts) Draw a ROC curve based on the above table.
+	
+	\begin{soln}  
+            \begin{figure}[h]
+    		\centering
+    		\includegraphics[width=0.6\textwidth]{images/ROCcurve.png}
+    	\end{figure} 
+        \end{soln}
+	\item (3pts) (Real-world open question) Suppose you want to choose a threshold parameter so that mails with confidence positives above the threshold can be classified as spam. Which value will you choose? Justify your answer based on the ROC curve.
+	
+	\begin{soln} Since we do not want to miss any important emails, we have to ensure that all mail that is classified as spam are actually spam. We can take the threshold of confidence positive $\geq$ 0.85 to ensure all mails are spam. Based on the ROC curve, we can see that the threshold of confidence positive $\geq$ 0.85 gives us the greatest true positive rate while maintaining a false positive rate of 0. \end{soln}
+\end{enumerate}
+
+\item (8 pts) In this problem, we will walk through a single step of the gradient descent algorithm for logistic regression. As a reminder,
+$$\hat{y} = f(x, \theta)$$
+$$f(x;\theta) = \sigma(\theta^\top x)$$
+$$\text{Cross entropy loss } L(\hat{y}, y) = -[y \log  \hat{y} + (1-y)\log(1-\hat{y})]$$
+$$\text{The single update step } \theta^{t+1} = \theta^{t} - \eta \nabla_{\theta} L(f(x;\theta), y) $$
+
+
+
+\begin{enumerate}
+	\item (4 pts) Compute the first gradient $\nabla_{\theta} L(f(x;\theta), y)$.
+	
+	\begin{soln} 
+        \begin{equation*}
+        \begin{split}
+        \nabla_{\theta} L(f(x;\theta), y) &= \nabla_{\theta} L(\sigma(\theta^\top x), y)\\
+            &= \nabla_{\theta} (-[ylog(\sigma(\theta^{T}x)) + (1 - y)log(1-\sigma(\theta^{T}x))])\\
+            &= -y\cfrac{x\sigma(\theta^{T}x)(1-\sigma(\theta^{T}x))}{\sigma(\theta^{T}x)} - (1-y)\cfrac{-x\sigma(\theta^{T}x)(1-\sigma(\theta^{T}x}{1-\sigma(\theta^{T}x)}\\
+            &= -xy(1-\sigma(\theta^{T}x) + (1-y)x\sigma(\theta^{T}x)) \\
+            &= x(\sigma(\theta^{T}x)-y)
+        \end{split}
+        \end{equation*}
+        \end{soln}
+
+        \newpage
+	\item (4 pts)
+ Now assume a two dimensional input. After including a bias parameter for the first dimension, we will have $\theta\in\mathbb{R}^3$.
+$$ \text{Initial parameters : }  \theta^{0}=[0, 0, 0]$$
+$$ \text{Learning rate }\eta=0.1$$
+$$ \text{data example : } x=[1, 3, 2], y=1$$
+Compute the updated parameter vector $\theta^{1}$ from the single update step.
+	
+	\begin{soln}
+        \begin{equation*}
+        \begin{split}
+        \theta^{t+1} &= \theta^{t} - \eta \nabla_{\theta} L(f(x;\theta), y) \\
+        & = \theta^{t} - \eta x(\sigma(\theta^{T}x)-y) \\
+        &= [0, 0, 0] - 0.1[1, 3, 2](\sigma([0, 0, 0]^{T}[1, 3, 2]) - 1) \\
+        &= [0, 0, 0] - 0.1[1, 3, 2]([-0.5, -0.5, -0.5]) \\
+        &= [0, 0, 0] - 0.1[-0.5, -1.5, -1.0] \\
+        &= [0, 0, 0] - [-0.05, -0.15, -0.10] \\
+        &= [0.05, 0.15, 0.10]
+        \end{split}
+        \end{equation*}
+        \end{soln}
+\end{enumerate}
+\end{enumerate}
+
+\section{Programming (50 pts)}
+\begin{soln} https://github.com/poonlucas/CS760/tree/main/HW3 \end{soln}
+\begin{enumerate}
+	\item (10 pts) Use the whole D2z.txt as training set.  Use Euclidean distance (i.e. $A=I$).
+	Visualize the predictions of 1NN on a 2D grid $[-2:0.1:2]^2$.
+	That is, you should produce test points whose first feature goes over $-2, -1.9, -1.8, \ldots, 1.9, 2$, so does the second feature independent of the first feature.
+	You should overlay the training set in the plot, just make sure we can tell which points are training, which are grid.
+	
+	\begin{soln}
+             My Figure:
+    	\begin{figure}[h]
+    		\centering
+    		\includegraphics[width=0.9\textwidth]{images/D2z.png}
+    	\end{figure}
+         \end{soln}
+
+        \newpage
+	\paragraph{Spam filter} Now, we will use 'emails.csv' as our dataset. The description is as follows.
+	
+        \begin{itemize}
+		\item Task: spam detection
+		\item The number of rows: 5000
+		\item The number of features: 3000 (Word frequency in each email)
+		\item The label (y) column name: `Predictor'
+		\item For a single training/test set split, use Email 1-4000 as the training set, Email 4001-5000 as the test set.
+		\item For 5-fold cross validation, split dataset in the following way.
+		\begin{itemize}
+			\item Fold 1, test set: Email 1-1000, training set: the rest (Email 1001-5000)
+			\item Fold 2, test set: Email 1000-2000, training set: the rest
+			\item Fold 3, test set: Email 2000-3000, training set: the rest
+			\item Fold 4, test set: Email 3000-4000, training set: the rest
+			\item Fold 5, test set: Email 4000-5000, training set: the rest			
+		\end{itemize}
+	\end{itemize}
+	
+	\item (8 pts) Implement 1NN, Run 5-fold cross validation. Report accuracy, precision, and recall in each fold.
+	
+	\begin{soln}
+            \begin{center}
+            	\begin{tabular}{| c | c | c | c |}
+            		\hline
+            		Fold & Accuracy & Precision & Recall \\
+            		\hline 1 & 0.825 & 0.6544943820224719 & 0.8175438596491228\\
+            		\hline 2 & 0.853 & 0.6857142857142857 & 0.8664259927797834\\
+            		\hline 3 & 0.862 & 0.7212121212121212 & 0.8380281690140845\\
+            		\hline 4 & 0.851 & 0.7164179104477612 & 0.8163265306122449\\
+            		\hline 5 & 0.775 & 0.6057441253263708 & 0.7581699346405228\\
+            		\hline
+            	\end{tabular}
+            \end{center}
+        \end{soln}
+	
+	\item (12 pts) Implement logistic regression (from scratch). Use gradient descent (refer to question 6 from part 1) to find the optimal parameters. You may need to tune your learning rate to find a good optimum. Run 5-fold cross validation. Report accuracy, precision, and recall in each fold.
+	
+	\begin{soln} Hyperparameters: $\eta$ = 0.001, Episodes = 100
+        \begin{center}
+            \begin{tabular}{| c | c | c | c |}
+                \hline
+                Fold & Accuracy & Precision & Recall \\
+                \hline 1 & 0.957 & 0.9653846153846154 & 0.8807017543859649\\
+                \hline 2 & 0.959 & 0.9436090225563910 & 0.9061371841155235\\
+                \hline 3 & 0.936 & 0.9330708661417323 & 0.8345070422535211\\
+                \hline 4 & 0.930 & 0.9057971014492754 & 0.8503401360544217\\
+                \hline 5 & 0.918 & 0.8435582822085890 & 0.8986928104575164\\
+                \hline
+            \end{tabular}
+        \end{center}
+        \end{soln}
+
+       \newpage
+	\item (10 pts) Run 5-fold cross validation with kNN varying k (k=1, 3, 5, 7, 10). Plot the average accuracy versus k, and list the average accuracy of each case. \\
+	\begin{soln} 
+        My figure: (Slightly different from the expected figure, there is no drop for my figure. I believe this is due to tie breaking when two training data points are equidistant to the test point)
+        \begin{figure}[h]
+		\centering
+		\includegraphics[width=0.6\textwidth]{images/knn5fold.png}
+	\end{figure}
+        \begin{center}
+            	\begin{tabular}{| c | c |}
+            		\hline
+            		  k & Average Accuracy \\
+            		\hline 1 & 0.8332\\
+            		\hline 3 & 0.8424\\
+            		\hline 5 & 0.8418\\
+            		\hline 7 & 0.8454\\
+            		\hline 10 & 0.8552\\
+            		\hline
+            	\end{tabular}
+            \end{center}
+        \end{soln}
+
+        \newpage
+	\item (10 pts) Use a single training/test setting. Train kNN (k=5) and logistic regression on the training set, and draw ROC curves based on the test set. \\
+ 
+        \begin{soln} My figure:
+        \begin{figure}[h]
+		\centering
+		\includegraphics[width=0.8\textwidth]{images/knnlogitROC.png}
+	\end{figure} 
+        \end{soln}
+	
+\end{enumerate}
 \bibliographystyle{apalike}
 \end{document}
